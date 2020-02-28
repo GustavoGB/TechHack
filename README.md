@@ -74,4 +74,63 @@ Enquanto a segunda mostra coisas como versão do Host, MAC address versão do ke
 
 ## Parte 1.1 d
 
-Para finalizar esta etapa foi necessário desenvolver um app simples de escaneamento de portas em um certo range de Ips, 
+Para finalizar esta etapa foi necessário desenvolver um app simples de escaneamento de portas em um certo range de Ips. Isto é, sabendo um alvo, ainda é necessário acessar um IP inicial e um IP final e verificar as portas do alvo neste meio. Além disso, escolhe-se a porta para realizar a socket na linha de comando, assim como o IP do alvo. Dessa forma, ao rodar o programa teremos 3 argumentos:
+- scrappyScanner.py
+- Ip alvo (192.168.0.12)
+- 80 (porta socket)
+
+Depois disso, o programa pedirá para colocar um IP inicial e um IP final, assim como uma porta inicial e uma porta final para serem varridas.
+
+ ```python
+import logging  
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+
+import sys
+
+import socket
+
+from scapy.all import *
+
+if len(sys.argv) != 3:
+    print("Uso: %s alvo portaSocket " % (sys.argv[0]))
+    print("O range de portas será dado como input do programa")
+    sys.exit(0)
+
+alvo = str(sys.argv[1])
+portaSocket = str(sys.argv[2])
+
+ipInicial = inet_ntoa(input("Digite o primeiro IP para comecar a varredura\n"))
+ipFinal   = inet_ntoa(input("Digite o ultimo IP para comecar varredura \n"))
+
+
+portaInicial = int(input("Digite a primeira porta a ser escaneada\n"))
+portaFinal = int(input("Digite a última porta a ser escaneada\n"))
+
+
+tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+destino = (alvo,portaSocket)
+
+print("Escaneando "+alvo+" para portas TCP\n")
+
+if portaInicial == portaFinal:
+    portaFinal += 1
+
+if portaInicial > portaFinal:
+    print("Porta final deve ser menor que porta inicial a ser escaneada")
+    sys.exit(0)
+
+## Escanear a rede
+for ips in range(ipInicial,ipFinal):
+    ## Escanear as portas
+    for p in range(portaInicial,portaFinal):
+        tcp.connect(destino)
+    resposta_pacote = sr1(tcp,timeout=0.5,verbose=0) ## 0x12 significa o sinal syn-ack(funcao sr para send)
+    if resposta_pacote == 0x12: 
+        print('Portas'+str(p)+'estão abertas')
+    sr1(tcp,timeout=0.5,verbose=0)  
+
+print("Escaneamento completo!")
+
+   ```

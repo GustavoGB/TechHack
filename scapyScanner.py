@@ -15,8 +15,8 @@ if len(sys.argv) != 3:
 alvo = str(sys.argv[1])
 portaSocket = str(sys.argv[2])
 
-ipInicial = str(input("Digite o primeiro IP para comecar a varredura\n"))
-ipFinal   = str(input("Digite o ultimo IP para \n"))
+ipInicial = inet_ntoa(input("Digite o primeiro IP para comecar a varredura\n"))
+ipFinal   = inet_ntoa(input("Digite o ultimo IP para \n"))
 
 
 portaInicial = int(input("Digite a primeira porta a ser escaneada\n"))
