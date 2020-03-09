@@ -245,3 +245,22 @@ Nosso próximo passo é identificar qual domínio este site que foi atacado pert
 
 Com isso, podemos saber o tráfego deste IP e especificamente os pacotes de DNS que esta conexão está tratando. 
 
+![](dns.png)
+
+Ao clicar no primeiro pacote direcionado ao nosso alvo pode-se encontrar seu domínio nas respostas que este pacote nos fornece, neste caso o domínio é o www.theopen.be
+
+### d)
+
+O site comprometido foi encontrado na segunda etapa. 
+
+    Alvo: 192.168.204.137
+
+
+### e) 
+O site que serviu de intermediário para que o usuário caísse neste golpe foi o site do Adobe.
+    http://wwwimages.adobe.com/www.adobe.com/images/shared/download_buttons/get_flash_player.gif
+
+### f)
+Este IP também foi encontrado na segunda etapa:
+
+    Atacante: 192.150.16.64
