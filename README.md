@@ -1,6 +1,7 @@
 # TechHack Roteiro
 
-## Parte 1.1 a
+# 1.1 
+### a)
    Encontrar o IP do alvo...
 
    Para conseguir o IP do alvo, é necessário conectar as duas VMS em uma mesma rede. 
@@ -26,7 +27,8 @@ Dentro da sub-red todos os Vendors são normais como computadores, celulares tab
      IP do alvo: 192.168.0.12   
 
 
-## Parte 1.1. b
+
+### b)
 
 Descobrir qual a versão do sistema operacional do alvo, qual é este sistema e em qual porta este processo está rodando.
 
@@ -49,7 +51,7 @@ Com isso conseguimos :
 - Versão do sistema operacional : 1.3.5 Server (Debian)
 
 
-## Parte 1.1 c
+### c)
 
 Vamos continuar buscando mais informações sobre o alvo, dessa vez, iremos utlizar o commando **nmap** com o objetivo de descobrir exatamente quais portas do alvo estão abertas para podermos realizar algum tipo de inspeção.
 
@@ -72,7 +74,7 @@ Enquanto a segunda mostra coisas como versão do Host, MAC address versão do ke
 ![](nmap2.png)
 
 
-## Parte 1.1 d
+### d)
 
 Para finalizar esta etapa foi necessário desenvolver um app simples de escaneamento de portas em um certo range de Ips. Isto é, sabendo um alvo, ainda é necessário acessar um IP inicial e um IP final e verificar as portas do alvo neste meio. Além disso, escolhe-se a porta para realizar a socket na linha de comando, assim como o IP do alvo. Dessa forma, ao rodar o programa teremos 3 argumentos:
 - scrappyScanner.py
@@ -137,11 +139,15 @@ for ips in rede:
 print("Escaneamento completo!")
    ```
 
-## Parte 1.e (faltou)
+### e (faltou)
 
 
 
-## Parte 1.2 - Análise de comunicação de dados
+
+
+
+
+## Parte 1.2 Roteiro - Análise de comunicação de dados
 
 Nesta segunda parte do roteiro utilizaremos o WireShark, ele é um (sniffer), isto é, consegue analisar diversos protocolos de comunicação entre as máquinas.
 A primeira etapa foi criar diversos filtros no WireShark para selecionar apenas os protocolos desejados. Dentre eles:
@@ -164,7 +170,7 @@ Fluxo com a utilização de um filtro:
 
 Através do print do fluxo normal do WireShark, é possível observar que existem diversos protocolos que participam na comunicação dos computadores dentro de uma rede. Portanto, quando desejamos encontrar denominada informação como o domínio de uma aplicação, por exemplo, pega-se o filtro DNS e procura-se informações a respeito do mesmo analisando estes pacotes. Por meio da teoria por trás do modelo TCP/IP, com esse filtro ainda precisamos lembrar que, se a conexão não for UDP, ela terá um pacote de resposta. No caso do DNS, este pacote de resposta mostrará exatamente o domínio desta aplicação. 
 
-### 1.2 
+# 1.2 
 
 ### a) Encontrando Host Names, Ips e Mac Address.
 
@@ -213,11 +219,29 @@ Dado que uma das máquinas foi atacada, a proposta agora é encontrar o IP que r
 
 A partir do enunciado, sabe-se que houve um redirecionamento de fato. Ou seja, ao analisar as respostas http que são entre 300 e 400, pegamos todos os pacotes que foram de fato redirecionados. Com isso, ao analisar todos os pacotes, chegou-se ao que parece ser mais estranho :
 
+    Filtro: 300 <http.response.code <400
 ![](parteBWireShark.png)
 
 
-A partir do print, pode-se concluir que todos estes pacotes foram redirecionados, ao olhar um por um, chegou-se a conclusão de que a imagem acima mostra algo estranho. Ele diz que a página foi redirecionada para uma imagem do adobe, porém o documento foi movido permanentemente 
+A partir do print, pode-se concluir que todos estes pacotes foram redirecionados, ao olhar um por um, chegou-se a conclusão de que a imagem acima mostra algo estranho. Ele diz que a página foi redirecionada permanentemente para uma URL suspeita. Dessa forma, ao clicar no pacote selecionado em verde na imagem, pode-se seguir este pacote por meio de um fluxo de TCP, obtendo o seguinte resultado: 
 
+![](parteb.1WireShark.png)
 
+Interpretando este output, percebe-se na primeira linha que ele tenta dar um GET em um diretório específico chamado /images/shared/download_buttons/get_flash_player.gif HTTP/1.1
+Entretanto, o comportamento estranho está nítido quando este método GET não deveria ser redirecionado para este link :
 
     http://epzqy.iphaeba.eu:22780/flow/17610/avenue/67785/source/43028/total/7782/misery/swirl/some/29364/patience/interval/ford/settle/knot/55468/anyone/land/
+
+
+Dessa forma, concluí-se que o IP que está sendo atacado em questão é : 192.168.204.137. 
+A fonte do ataque segundo nossas análises é dita pelo IP 192.150.16.64.
+O tipo de ataque neste caso também envolve engenharia social, já que de alguma forma o atacante está tentando enganar o usuário com uma possível imagem que seja verdadeira. No entanto, quando o usuário cair neste click o atacante já terá redirecionado o mesmo para uma URL maliciosa. 
+
+### c) 
+
+Nosso próximo passo é identificar qual domínio este site que foi atacado pertence. Para isso utilizaremos o filtro com o seguinte comando: 
+
+    ip.addr == 192.168.204.137 && dns
+
+Com isso, podemos saber o tráfego deste IP e especificamente os pacotes de DNS que esta conexão está tratando. 
+
