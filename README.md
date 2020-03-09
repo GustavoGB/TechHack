@@ -144,4 +144,80 @@ print("Escaneamento completo!")
 ## Parte 1.2 - Análise de comunicação de dados
 
 Nesta segunda parte do roteiro utilizaremos o WireShark, ele é um (sniffer), isto é, consegue analisar diversos protocolos de comunicação entre as máquinas.
+A primeira etapa foi criar diversos filtros no WireShark para selecionar apenas os protocolos desejados. Dentre eles:
+    
+    >  DNS
+    >  HTTP
+    >  UDP
+    >  TCP 
+    >  DHCP
 
+Fluxo normal no WireShark:
+
+![](WireSharkNofilter.png)
+
+
+
+Fluxo com a utilização de um filtro:
+
+![](wireSharkDnsFilter.png)
+
+Através do print do fluxo normal do WireShark, é possível observar que existem diversos protocolos que participam na comunicação dos computadores dentro de uma rede. Portanto, quando desejamos encontrar denominada informação como o domínio de uma aplicação, por exemplo, pega-se o filtro DNS e procura-se informações a respeito do mesmo analisando estes pacotes. Por meio da teoria por trás do modelo TCP/IP, com esse filtro ainda precisamos lembrar que, se a conexão não for UDP, ela terá um pacote de resposta. No caso do DNS, este pacote de resposta mostrará exatamente o domínio desta aplicação. 
+
+### 1.2 
+
+### a) Encontrando Host Names, Ips e Mac Address.
+
+Por meio do arquivo dado  "exercício análise trafego1.pcap" nossa primeira tarefa é de descobrir os 3 hosts names, IPs e MAC ADDRESS das 3 máquinas Windows. Para descobrir um IP deve-se lembrar quais protocolos conversam diretamente com o roteador para sabermos quais pacotes devemos buscar neste exercício. Neste caso, podemos analisar os pacotes DHCP, pois eles são os responsáveis por automaticamente atrelar um IP a uma máquina, lembrando que o DHCP é feito dentro de um roteador. 
+
+Com isso temos o seguinte output após utilizar o filtro do WireShark :
+
+![](WiresharkDHCPfilter.png)
+
+A partir destes resultados, podemos analisar ainda mais a fundo, ao clicar em info, observar quais requests DHCP foram feitos para encontrar os IPS que estão estabelecendo a conexão. 
+
+Este print nos da uma ideia do broadcast, já que o endereço destino é 255.255.255.255. Ou seja, os dispositivos mandam um sinal desejando se conectar na rede, com isso o roteador, por meio do DHCP, analisa esta requisição, e responde para o dispositivo caso a conexão foi feita com sucesso. Assim, ao observar o (Dynamic Host Configuration Protocol) deste pacote em verde na imagem acima, é possível descobrir o IP, o MAC-ADDRESS e o host name das três máquinas Windowns.
+
+![](WireSharkDHCP1Maquina.png)
+
+Dessa forma, descobrimos os seguintes nomes de Hosts, Ips e Mac-Address.
+
+    #Primeira Máquina    
+
+    Host Name: ROCKETMAN-PC
+
+    IP : 192.168.204.139
+
+    MAC-ADDRESS : 00:0c:29:61:c1:89
+
+    #Segunda Máquina
+
+    Host Name : MYHUMPS-PC
+
+    IP : 192.168.204.137
+
+    MAC-ADDRESS: 00:0c:29:9d:b8:6d
+
+
+    #Terceira Máquina
+
+    Host Name : WORKSTATION6
+
+    IP : 192.168.204.146
+
+    MAC-ADDRESS: 00:0c:29:fc:bc:2e
+
+b) Encontrando Host Names, IPS dos invasores.
+
+Dado que uma das máquinas foi atacada, a proposta agora é encontrar o IP que redirecionou alguma ação do cliente para o malware em questão. 
+
+A partir do enunciado, sabe-se que houve um redirecionamento de fato. Ou seja, ao analisar as respostas http que são entre 300 e 400, pegamos todos os pacotes que foram de fato redirecionados. Com isso, ao analisar todos os pacotes, chegou-se ao que parece ser mais estranho :
+
+![](parteBWireShark.png)
+
+
+A partir do print, pode-se concluir que todos estes pacotes foram redirecionados, ao olhar um por um, chegou-se a conclusão de que a imagem acima mostra algo estranho. Ele diz que a página foi redirecionada para uma imagem do adobe, porém o documento foi movido permanentemente 
+
+
+
+    http://epzqy.iphaeba.eu:22780/flow/17610/avenue/67785/source/43028/total/7782/misery/swirl/some/29364/patience/interval/ford/settle/knot/55468/anyone/land/
