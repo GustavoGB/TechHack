@@ -257,7 +257,10 @@ O site comprometido foi encontrado na segunda etapa.
 
 
 ### e) 
-O site que serviu de intermediário para que o usuário caísse neste golpe foi o site do Adobe.
+O site que serviu de intermediário para que o usuário caísse neste golpe foi o site do Adobe, entretanto o real responsável pelo direcionamento foi o site:
+    
+    www.theopen.be
+
     http://wwwimages.adobe.com/www.adobe.com/images/shared/download_buttons/get_flash_player.gif
 
 ### f)
