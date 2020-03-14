@@ -257,10 +257,87 @@ O site comprometido foi encontrado na segunda etapa.
 
 
 ### e) 
-O site que serviu de intermediário para que o usuário caísse neste golpe foi o site do Adobe.
+O site que serviu de intermediário para que o usuário caísse neste golpe foi o site do Adobe, entretanto o real responsável pelo direcionamento foi o site:
+    
+    www.theopen.be
+
     http://wwwimages.adobe.com/www.adobe.com/images/shared/download_buttons/get_flash_player.gif
 
 ### f)
 Este IP também foi encontrado na segunda etapa:
 
     Atacante: 192.150.16.64
+
+# 1.3 Adiministração Sistema Operacional GNU/linux
+
+## Esta parte do roteiro é focada em como o sistema operacional linux guarda informações e utiliza sistemas de permissões.
+
+## 1.3 a)
+
+Com a ideia de tentar procurar por algum malware na máquina dada pelo professor, o objetivo foi de escanear cada um dos diretórios dessa máquina.
+Dessa forma, procurou-se algum comando que retorna-se algum arquivo ou diretório suspeito. 
+    Neste caso, utilizou-se o find. Como não sabia-se a origem do arquivo em toda a estrutura da sistema operacioanl, rodou-se o seguinte comando:
+
+        $ find / 
+Porém a saída foi extremamente grande porque não filtramos o que desejamos, a próxima tentativa utilizamos a flag **-type f**. 
+        
+        $ find / -type f 
+Novamente, não nós ajudou muito... A saída continuou muito grande.
+
+Assim teve-se que pensar mais um pouco para encontrar arquivos que tenham algo de diferente em relação aos outros. Por isso considerou-se a permissão que cada um deles possui. Com este filtro de permissão foi possível encontrar o possível malware. 
+
+    $ find / -perm 0777 -type f
+
+Com isso, a saída foi a seguinte : 
+
+![](find.png)
+
+Com isso encontrou-se um executável ocultado dentro da pasta /opt/. Ou seja, caso eu desse o seguinte comando :
+    
+    $ cd /opt
+    $ ls -a 
+
+Dessa forma, o -a nós mostrará o arquivo oculto executável: 
+    ![](oculto.png)
+
+Que ao rodarmos da pasta home, temos que o desafio 1 foi concluído:
+
+![](desafio1.png)
+
+## 1  b) PASS
+
+
+## 1 c) Encontrando um processo malicioso
+
+Nossa próxima etapa será descobrir um processo malicioso que está rodando na máquina de forma despercebida. 
+Para checar os processos utilizamos o comando :
+    
+    $ ps aux
+
+O ideal para este parte foi verificar o manual do ps pois ele tem muitas opcões, assim : 
+
+    $ man ps
+
+Seguindo a lógica de permissões do item a, a primeira filtragem será para ver processos que possuem permissões elevadas. Assim vamos utilizar o comando do ps que observa os processos do root.
+
+    $ ps -U root -u  
+
+Encontra-se um processo python rodando de forma suspeita com a permissão de root. 
+
+![](pythonOculto.png)
+
+Agora o passo necessário é encontrar em qual porta este processo está rodando, por mais que o caminho da origem deste arquivo esteja cortado, ele está na seguinte pasta:
+
+    /usr/local/share/tcp.py
+
+
+Dando o comando cat neste arquivo:
+    
+    $ cat usr/local/share/tcp.py
+
+Podemos ver que ele estabelece uma conexão tcp utilizando a porta 15000: 
+![](tcp.png)
+
+
+Dessa forma este código utiliza a porta 15000 para conseguir se conectar com a máquina. É importante ressaltar que está é uma porta não tão comunm de ser utilizada, o que levanta ainda mais suspeitas sobre o código malicioso. O código em questão manda uma mensagem de "Hello" para um serviço em que ele se conectou. Além disso vale pontuar que a conexão criada é TCP como o próprio arquivo. 
+
