@@ -340,7 +340,3 @@ Podemos ver que ele estabelece uma conexão tcp utilizando a porta 15000:
 
 
 Dessa forma este código utiliza a porta 15000 para conseguir se conectar com a máquina. É importante ressaltar que está é uma porta não tão comunm de ser utilizada, o que levanta ainda mais suspeitas sobre o código malicioso. O código em questão manda uma mensagem de "Hello" para um serviço em que ele se conectou. Além disso vale pontuar que a conexão criada é TCP como o próprio arquivo. 
-<<<<<<< HEAD
-
-=======
->>>>>>> 814a5ef2e69c09783e508f1240944bc5b61a7134
