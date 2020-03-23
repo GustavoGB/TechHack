@@ -348,11 +348,13 @@ Dessa forma este código utiliza a porta 15000 para conseguir se conectar com a 
 
 |Id partições   |Nome partições   |Encriptada| Espaço disco    | 
 |---            |---              |---       | ---             |
-|1              | /boot           |   não    |  500MB               |  
-|2              | /var            |   sim    |   4GB              | 
-|3              | /root           |   sim    |   4GB              | 
+|1              | /boot           |   não    |  500MB          |  
+|2              | /var            |   sim    |   4GB           | 
+|3              | /root           |   sim    |   4GB           | 
 
 A primeira partição */boot* contém os arquivos do sistema de boot. Portanto não devemos encriptá-los, se não o sistema iria crashar na hora do boot pois seus arquivos estariam encriptados.   
+
 A segunda partição representa um usuário comum no nosso sistema. Ele deve ser encriptado e possuir uma senha. Entretanto, suas permissões não são totais como no */root*. Contendo assim uma senha diferente da nossa terceira partição. 
+
 Finalmente temos a partição raiz */root*, ela é basicamente a partição que um hacker gostaria de invadir, vide o fato de possuir permissões totais para alterar, deletar arquivos importantes. Ela deve com certeza ser encriptada e possuir uma senha diferente da nossa segunda partição */var*.  
 
