@@ -348,9 +348,9 @@ Dessa forma este código utiliza a porta 15000 para conseguir se conectar com a 
 
 |Id partições   |Nome partições   |Encriptada| Espaço disco    | 
 |---            |---              |---       | ---             |
-|1              | /boot           |   não    |  500MB          |  
-|2              | /var            |   sim    |   4GB           | 
-|3              | /root           |   sim    |   4GB           | 
+|1              | /boot           |   não    |  400MB          |  
+|2              | /var            |   sim    |   5GB           | 
+|3              | /root           |   sim    |   7,5GB           | 
 
 A primeira partição */boot* contém os arquivos do sistema de boot. Portanto não devemos encriptá-los, se não o sistema iria crashar na hora do boot pois seus arquivos estariam encriptados.   
 
@@ -358,3 +358,36 @@ A segunda partição representa um usuário comum no nosso sistema. Ele deve ser
 
 Finalmente temos a partição raiz */root*, ela é basicamente a partição que um hacker gostaria de invadir, vide o fato de possuir permissões totais para alterar, deletar arquivos importantes. Ela deve com certeza ser encriptada e possuir uma senha diferente da nossa segunda partição */var*.  
 
+## 1.a) Procurando informações sobre as partições no sistema
+
+A primeira etapa é utilizar um comando que mostre como nossas partições estão disponibilizadas no nosso sistema operacional encryptado.
+
+Para essa tarefa caminhou-se até o diretório /dev/mapper e utilizou-se o seguinte comando:
+    
+    $ lsblk
+
+Com isso podemos observar que temos nossas 3 partições principais divididas principalmente em sda1,sda5 e sda6.
+
+![](mapper.png)
+
+    sda1 -> responsável pelo /boot que não deve ser encriptada. 
+
+    sda5 -> responsável pela /var que deve ser encriptada
+
+    sda6 -> responsável pelo /root que deve ser encriptada
+
+Nossas restrições parecem fazer sentido, já que ao ler o tipo das 2 últimas partições possui o termo "crypt".  Com isso vamos verificar se o método de encritação também está correto.
+
+## 1.b) Colocando em evidência o encrypt das partições
+
+Após todo o processo de instalação e escolha de partições, instalou-se a biblioteca *cryptsetup*
+
+    $ sudo apt install cryptsetup
+Como já tinha dado o comando para possuir acesso de root,  possia-se todas as permissões necessárias. Dessa forma foi-se até o diretório que contém a informação sobre as partições para conseguir ter certeza que elas estão encryptadas. 
+Por meio do comando:
+    
+    $ cryptsetup status (particao)
+
+Foi possível ter certeza de que ambas as partições 
+*/var* quanto a */root* foram encryptadas. 
+![](encrypted.png)
