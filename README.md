@@ -504,7 +504,7 @@ Entretanto, somente o nmap desta forma não irá nois mostrar com certeza que os
 
     $ nmap -sV --script=banner localhost
 
-![](open.png)
+![ScrenShoot](open.png)
 
 Opa temos vários problemas aqui, o apache e o ftpd estão com suas versões ocultadas, mas o openssh e o mariadb não.. Além disso as portas não deveriam estar abertas, e sim bloqueadas para acesso externo.
 
