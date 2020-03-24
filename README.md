@@ -391,3 +391,61 @@ Por meio do comando:
 Foi possível ter certeza de que ambas as partições 
 */var* quanto a */root* foram encryptadas. 
 ![](encrypted.png)
+
+## 1.c) Instalando programas
+
+A seguir foi necessário instalar uma série de programas para, no próximo item trabalhar com o ocultamento dos mesmos. 
+Dessa forma instalou-se os seguintes serviços:
+
+* nmap
+* tcpdump
+* iptraf
+* htop
+* apache2
+* php
+* mariadb-server
+* proftpd
+* openssh-server
+
+Ao instalar todos estes programas verificou-se a versão de cada um com o comando **-v** como por exemplo:
+    
+    $  php -v
+![](phpV.png)
+
+Ao utilizar este comando com todos os programas, criou-se a tabela abaixo que mostra a relação entre a versão do programa com a sua atual versão na nossa máquina.
+
+|Nome do programa      |Número da versão |
+|---                   |---              |
+|NMAP                  | 7.7             | 
+|TCPDUMP               | 4.9.3-1         |   
+|IPTRAF                | 1:1.1.4-6       |   
+|HTOP                  | 2.2.0           |   
+|APACHE2               | 2.4.38-3        |   
+|PHP                   | 7.3.14-1        |   
+|MARIADB-SERVER        | 10.3.22         |   
+|PROFTPD               | 1.3.6-4         |   
+|OPENSSH-SERVER        | 1.7             |    
+
+Após a instalação de todos os pacotes, foi necessário fechar a porta FTP para qualquer host na internet, já que é uma porta extremamente explorada por atacantes por ser facilmente detectada. 
+Para isso vamos abrir o arquivo de configuração no debian com o seguinte comando:
+
+    $ nano /etc/proftpd/proftpd.conf
+
+Com isso consegue-se dar uma olhada em como o arquivo é estruturado, mas primeiro vamos identificar nele o local onde indica que a porta FTP é a número 21.
+
+![](ftp.png)
+
+Ao observar um pouco do arquivo achamos que de fato o serviço FTP está na porta de número 21. Assim vamos mudar sua porta para deixar os possíveis atacantes confusos, lembrando que podemos escolher qualquer porta TCP que vá de 1024 até 65535. Vamos aterar para a porta de número 2021.
+Por enquanto tudo certo, vamos reiniciar o serviço e ver se ele esta localizado na porta em que colocamos.
+
+    $ systemclt restart proftpd
+
+Agora um comando para localizar o ftp filtrando com o grep :)
+    
+    $ ss -tlpn | grep ftp
+
+![](ftpNewPort.png)
+e com isso temos o ftp rodando agora na porta 2021. Entretanto isso não é o suficiente, já que devemos ainda bloquear o acesso de qualquer host em relação a porta 2021 agora. 
+Mesmo rodando nesta porta ainda é possível que algum atacante acesse este servidor. Por isso vamos dar um shutdown nele para que isso não aconteça de forma alguma.
+
+
