@@ -497,8 +497,8 @@ Agora vamos verificar com o nmap da própria máquina mesmo para ver quais porta
 
 Temos 3 serviços bem importantes que ainda estão abertos, por isso vamos repetir o procedimento utilizado com o iptables para dropar as portas 80 e 22. Por algum motivo a porta 2021 parece aberta mas ela sempre da timeout.
 
-Depois de alterar o iptables, conseguimos com que o Nmap fique rodando mas não encontre nada... Ótimo, assim o atacante terá menos e menos artifícios para continuar o seu ataque. (Deixei o Nmap mais de 15 minutos e nada...)
-![](fim.png)
+Depois de alterar o iptables, conseguimos com que o Nmap fique rodando mas encontre estas portas com o state igual à FILTERED, isto é, a conexão não está aberta para qualquer host. Ótimo, assim o atacante terá mais trabalho para realizar o seu ataque.
+![](fim2.png)
 
 ## 1.e) Porquê a pasta /boot não deve ser encriptada? 
 
