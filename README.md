@@ -410,6 +410,7 @@ Dessa forma instalou-se os seguintes serviços:
 Ao instalar todos estes programas verificou-se a versão de cada um com o comando **-v** como por exemplo:
     
     $  php -v
+
 ![](phpV.png)
 
 Ao utilizar este comando com todos os programas, criou-se a tabela abaixo que mostra a relação entre a versão do programa com a sua atual versão na nossa máquina.
@@ -504,9 +505,10 @@ Entretanto, somente o nmap desta forma não irá nois mostrar com certeza que os
 
     $ nmap -sV --script=banner localhost
 
-![ScrenShoot](open.png)
+![](open.png)
 
 Opa temos vários problemas aqui, o apache e o ftpd estão com suas versões ocultadas, mas o openssh e o mariadb não.. Além disso as portas não deveriam estar abertas, e sim bloqueadas para acesso externo.
+
 
 ## 1.e) Porquê a pasta /boot não deve ser encriptada? 
 
