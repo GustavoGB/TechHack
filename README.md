@@ -446,6 +446,61 @@ Agora um comando para localizar o ftp filtrando com o grep :)
 
 ![](ftpNewPort.png)
 e com isso temos o ftp rodando agora na porta 2021. Entretanto isso não é o suficiente, já que devemos ainda bloquear o acesso de qualquer host em relação a porta 2021 agora. 
-Mesmo rodando nesta porta ainda é possível que algum atacante acesse este servidor. Por isso vamos dar um shutdown nele para que isso não aconteça de forma alguma.
+Mesmo rodando nesta porta ainda é possível que algum atacante acesse este servidor. Por isso vamos dar um drop nesta pporta para que isso não aconteça de forma alguma. Com o comando :
 
+    $ sudo iptables -I INPUT -p tcp -dport 2021 -j DROP
+
+Agora a comunicação tcp com a porta 2021 foi dropada utilizando este comando, evitando que atacantes externos acessem a nossa porta de FTP para explorar vulnerabilidades.
+
+Com isso, rodamos o Kali para verificar se está tudo protegido de fato, primeira coisa foi repetir o procedimento da primeira parte do roteiro para descobrir o IP da minha máquina debian criptografada. Assim tem-se o endereço IP : 192.168.109.2 
+Podemos novamente tentar explorar e observar o versionamento da porta 2021 ou 21 e o resultado era o que estamos esperando! 
+
+![](bannerftp.png)
+
+Perfeito, conseguimos fechar a nossa conexão ftp para a porta 21 e 2021. 
+
+## 1.d) Ocultando banners
+
+A tarefa agora é de tentar ocultar o versionamento dos programas instalados anteriromente. Vamos começar com o apache2. 
+Vamos acessar as pastas dentro do /etc/apache2
+
+Depois de acessar o arquivo apache2.conf, adicionou-se as seguintes linhas:
+
+    ServerTokens Prod
+    ServerSignature Off
+
+Restartamos o sistema novamente:
+
+    $ sudo systemctl restart apache2
+
+Além disso, antes de verificar o apache2, vamos ver também para esconder a versão do PHP, já que essa combinação é muito comum para projetos Web. Para isso entrou-se no seguinte arquivo que contém algumas configurações do PHP.
+
+    $ sudo nano /etc/php/7.3/cli/php.ini
+
+Assim, devemos procurar pela palavra chave **php-expose** como mostra a seguinte foto:
+
+![](phpExposto.png)
+
+Trocando sua flag por **off** e dando restart novamente no apache2, conseguimos um resultado bem legal. Com a ajuda da ferramenta *lynx* foi possivel ter certeza de que a versão tanto do apache2, quanto do php, estivessem ocultadas. Rodando o comando 
+
+    $ lynx -head -mime_header http://localhost 
+
+Nossa resposta ficou a seguinte :
+
+![](bannerPhp.png)
+
+Bem satisfatório! Agora vamos analisar as portas que continuam abertas e garantir a segurança delas
+
+Agora vamos verificar com o nmap da própria máquina mesmo para ver quais portas estão abertas ainda. 
+
+![](ultasPortas.png)
+
+Temos 3 serviços bem importantes que ainda estão abertos, por isso vamos repetir o procedimento utilizado com o iptables para dropar as portas 80 e 22. Por algum motivo a porta 2021 parece aberta mas ela sempre da timeout.
+
+Depois de alterar o iptables, conseguimos com que o Nmap fique rodando mas não encontre nada... Ótimo, assim o atacante terá menos e menos artifícios para continuar o seu ataque. (Deixei o Nmap mais de 15 minutos e nada...)
+![](fim.png)
+
+## 1.e) Porquê a pasta /boot não deve ser encriptada? 
+
+A pasta /boot não pode ser encriptada pois ela contém todos os binários necessários na hora da inicialização e boot do linux. Portanto, caso ela seja encriptada o linux não vai conseguir encontrar os arquivos necessários dentro do /boot pois eles estarão todos embaralhados, o que causarã um crash no O.S. Por este motivo encriptamos as partições de usuário e raiz do sistema, já que essas informações não são vitais para o sistema ser inicilizado. 
 
