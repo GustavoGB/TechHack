@@ -500,6 +500,14 @@ Temos 3 serviços bem importantes que ainda estão abertos, por isso vamos repet
 Depois de alterar o iptables, conseguimos com que o Nmap fique rodando mas encontre estas portas com o state igual à FILTERED, isto é, a conexão não está aberta para qualquer host. Ótimo, assim o atacante terá mais trabalho para realizar o seu ataque.
 ![](fim2.png)
 
+Entretanto, somente o nmap desta forma não irá nois mostrar com certeza que os serviços foram escondidos, dessa forma rodou-se o seguinte comando :
+
+    $ nmap -sV --script=banner localhost
+
+![](open.png)
+
+Opa temos vários problemas aqui, o apache e o ftpd estão com suas versões ocultadas, mas o openssh e o mariadb não.. Além disso as portas não deveriam estar abertas, e sim bloqueadas para acesso externo.
+
 ## 1.e) Porquê a pasta /boot não deve ser encriptada? 
 
 A pasta /boot não pode ser encriptada pois ela contém todos os binários necessários na hora da inicialização e boot do linux. Portanto, caso ela seja encriptada o linux não vai conseguir encontrar os arquivos necessários dentro do /boot pois eles estarão todos embaralhados, o que causarã um crash no O.S. Por este motivo encriptamos as partições de usuário e raiz do sistema, já que essas informações não são vitais para o sistema ser inicilizado. 
