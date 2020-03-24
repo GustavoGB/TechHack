@@ -446,7 +446,8 @@ Agora um comando para localizar o ftp filtrando com o grep :)
     $ ss -tlpn | grep ftp
 
 ![](ftpNewPort.png)
-e com isso temos o ftp rodando agora na porta 2021. Entretanto isso não é o suficiente, já que devemos ainda bloquear o acesso de qualquer host em relação a porta 2021 agora. 
+
+E com isso temos o ftp rodando agora na porta 2021. Entretanto isso não é o suficiente, já que devemos ainda bloquear o acesso de qualquer host em relação a porta 2021 agora. 
 Mesmo rodando nesta porta ainda é possível que algum atacante acesse este servidor. Por isso vamos dar um drop nesta pporta para que isso não aconteça de forma alguma. Com o comando :
 
     $ sudo iptables -I INPUT -p tcp -dport 2021 -j DROP
@@ -499,6 +500,7 @@ Agora vamos verificar com o nmap da própria máquina mesmo para ver quais porta
 Temos 3 serviços bem importantes que ainda estão abertos, por isso vamos repetir o procedimento utilizado com o iptables para dropar as portas 80 e 22. Por algum motivo a porta 2021 parece aberta mas ela sempre da timeout.
 
 Depois de alterar o iptables, conseguimos com que o Nmap fique rodando mas encontre estas portas com o state igual à FILTERED, isto é, a conexão não está aberta para qualquer host. Ótimo, assim o atacante terá mais trabalho para realizar o seu ataque.
+
 ![](fim2.png)
 
 Entretanto, somente o nmap desta forma não irá nois mostrar com certeza que os serviços foram escondidos, dessa forma rodou-se o seguinte comando :
@@ -507,9 +509,37 @@ Entretanto, somente o nmap desta forma não irá nois mostrar com certeza que os
 
 ![](open.png)
 
-Opa temos vários problemas aqui, o apache e o ftpd estão com suas versões ocultadas, mas o openssh e o mariadb não.. Além disso as portas não deveriam estar abertas, e sim bloqueadas para acesso externo.
+Opa temos vários problemas aqui, o apache e o ftpd estão com suas versões ocultadas, mas o openssh e o mariadb não.. Além disso as portas não deveriam estar abertas, e sim bloqueadas para acesso externo. O objetivo será de fechar todas estas portas e tentar esconder a versão do openSSH e do MariaDB. Além disso, alterou-se um arquivo localizado no seguinte diretório :
+
+    $ sudo nano /etc/ssh/sshd_config
+
+Foi adicionada uma linha contendo : 
+    
+    DebianBanner no
+
+Depois atualizar o serviço com 
+
+    $ sudo /etc/init.d/ssh restart
+
+E com isso foi possível esconder a versão do debian! Mas não a do openSSH... Por isso tivemos que recorrer aos iptables novamente!
 
 
+* Utilizando o comando do iptables temos a porta 22 SSH como filtrada, ocultando a versão real do programa openSSH:
+    ![](openSSHOculto.png)
+
+* Repetindo este processo para a porta 80 temos:
+    ![](httpOculto.png)
+
+* + porta 631/servico ipp:
+    ![](631Closed.png)
+
+* + porta 2021/ftp:
+    ![](ftpOcultado.png)
+
+* + porta 3306/MySQL:
+    ![](all.png)
+
+Agora sim! Conseguiu-se esconder as versões de todos os serviços locais da nossa vm. 
 ## 1.e) Porquê a pasta /boot não deve ser encriptada? 
 
 A pasta /boot não pode ser encriptada pois ela contém todos os binários necessários na hora da inicialização e boot do linux. Portanto, caso ela seja encriptada o linux não vai conseguir encontrar os arquivos necessários dentro do /boot pois eles estarão todos embaralhados, o que causarã um crash no O.S. Por este motivo encriptamos as partições de usuário e raiz do sistema, já que essas informações não são vitais para o sistema ser inicilizado. 
