@@ -1,20 +1,65 @@
 #!/usr/bin/python
-
-import socket 
+import logging  
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import sys
+import socket
+from scapy.all import *
+import ipaddress
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # setar a classe socket para pegar o inet = ipv4 e sock stream para tcp
+def tcpScan(alvo,portaSocket,rede,portaInicial,portaFinal):
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tcp.settimeout(5) # Timeout caso a rede conect
+    print("Escaneando "+ str(alvo) +" para portas TCP\n")
+    ## Escanear a rede
+    for ips in rede:
+        ## Escanear as portas
+        for p in range(portaInicial,portaFinal):
+            if tcp.connect((str(alvo),portaSocket)):
+                print("Connect to port number.{0}",p) 
+            else:
+                # Se as portas estiverem fechadas ira dar um erro de Traceback do proprio script falando que o acesso nao foi permitido
+                raise Exception("Connection refused")
+                print("The port " + str(p) + " is closed, could't connect")
+    print("Escaneamento completo!")
 
-s.settimeout(5)
+def udpScan(alvo,portaSocket,rede,portaInicial,portaFinal):
+    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp.settimeout(5) # Timeout caso a rede conect
+    print("Escaneando "+ str(alvo) +" para portas TCP\n")
+    ## Escanear a rede
+    for ips in rede:
+        ## Escanear as portas
+        for p in range(portaInicial,portaFinal):
+            if udp.connect((str(alvo),portaSocket)):
+                print("Connect to port number.{0}",p) 
+            else:
+                # Se as portas estiverem fechadas ira dar um erro de Traceback do proprio script falando que o acesso nao foi permitido
+                raise Exception("Connection refused")
+                print("The port " + str(p) + " is closed, could't connect")
+    print("Escaneamento completo!")
 
-host_target = input("Input the IP for the research\n") # Recebe o IP que quer ser analisado como argumento
-port_target = int(input("Input the port your want to see if it's open or not\n")) # Recebe a porta que quer ser analisada como argumento 
 
-def scanPort(port):
-    if s.connect_ex((host_target,port_target)):
-        print("The port is closed") 
-    else:
-        print("The port is open")
+## 192.168.0.2 localhost, ver os meus proprios servicos pro teste
+  def main():
+    if len(sys.argv) != 4:
+        print("Uso: %s alvo portaSocket rede" % (sys.argv[0]))
+        print("O range de portas será dado como input do programa")
+        sys.exit(0)
 
-scanPort(port_target)
+    alvo = ipaddress.IPv4Address(sys.argv[1])
+    portaSocket = int(sys.argv[2])
+    rede = ipaddress.ip_network(sys.argv[3])
 
+    portaInicial = int(input("Digite a primeira porta a ser escaneada\n"))
+    portaFinal = int(input("Digite a última porta a ser escaneada\n"))
+
+    # Verificar se as portas nao sao iguais
+    if portaInicial == portaFinal:
+        portaFinal += 1
+
+    elif portaInicial > portaFinal:
+        print("Porta final deve ser menor que porta inicial a ser escaneada")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()
